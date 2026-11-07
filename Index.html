@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وجهتك - منصة التوجيه المهني</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #3b7ea1;
+            --secondary: #5fa8d3;
+            --light: #e8f4f8;
+            --bg-gray: #f4f7f9;
+            --dark: #2c4a5c;
+            --white: #ffffff;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* شريط التنقل العلوي */
+        nav {
+            background: var(--white);
+            padding: 0.8rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 10px rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .logout-btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* نظام الصفحات */
+        .page {
+            display: none;
+            flex: 1;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 1. الصفحة الافتتاحية */
+        .landing-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .landing-card {
+            background: var(--white);
+            padding: 3.5rem 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .landing-card .logo-box {
+            width: 64px;
+            height: 64px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0 auto 1.5rem;
+        }
+
+        .landing-card h1 {
+            font-size: 2.2rem;
+            color: #244255;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .landing-card p {
+            font-size: 1.05rem;
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+
+        .main-btn {
+            background-color: #337ab7;
+            color: white;
+            padding: 0.75rem 2.5rem;
+            border-radius: 25px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .main-btn:hover {
+            background-color: #286090;
+        }
+
+        /* نافذة تسجيل الدخول */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .login-overlay.active {
+            display: flex;
+        }
+
+        .login-modal {
+            background: white;
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .login-modal h2 {
+            color: #244255;
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-modal input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--primary);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .login-modal .btn-login {
+            background-color: #337ab7;
+            color: white;
+            width: 100%;
+            padding: 0.7rem;
+            border-radius: 20px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .login-modal .signup-text {
+            margin-top: 1.2rem;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .login-modal .signup-text a {
+            color: #337ab7;
+            text-decoration: none;
+        }
+
+        .close-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: #94a3b8;
+            background: none;
+            border: none;
+        }
+
+        /* هيكل محتوى الحاوية */
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            flex: 1;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: #244255;
+            font-weight: 600;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        /* البطاقات الكبيرة للمسارات والأقسام */
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card h3 {
+            font-size: 1.35rem;
+            margin-bottom: 0.6rem;
+            color: #337ab7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .card p {
+            color: #64748b;
+            margin-bottom: 1.2rem;
+            font-size: 0.95rem;
+        }
+
+        .action-btn {
+            background-color: #337ab7;
+            color: white;
+            padding: 0.55rem 2rem;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .action-btn:hover {
+            background-color: #286090;
+        }
+
+        /* الفوتر المتناسق السفلي */
+        footer {
+            background: #233644;
+            color: #94a3b8;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            border-top: 1px solid #1e293b;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. الصفحة الافتتاحية -->
+    <div id="page-landing" class="page active">
+        <div class="landing-container">
+            <div class="landing-card">
+                <div class="logo-box">و</div>
+                <h1>وجهتك</h1>
+                <p>منصتك الشاملة لتبدأ رحلتك نحو مستقبل أفضل</p>
+                <button class="main-btn" onclick="openLoginModal()">ابدأ رحلتك</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تسجيل الدخول المنبثقة -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-modal">
+            <button class="close-icon" onclick="closeLoginModal()">×</button>
+            <h2>سجل دخولك</h2>
+            <input type="text" placeholder="اسم المستخدم" id="usernameInput">
+            <input type="password" placeholder="كلمة المرور" id="passwordInput">
+            <button class="btn-login" onclick="executeLogin()">تسجيل الدخول</button>
+            <div class="signup-text">ليس لديك حساب؟ <a href="#" onclick="alert('تتوفر هذه الميزة قريباً مع قواعد البيانات!'); return false;">أنشئ حساباً جديداً</a></div>
+        </div>
+    </div>
+
+    <!-- 2. صفحة اختيار المسارات الثلاثة الرئيسية -->
+    <div id="page-main-tracks" class="page">
+        <nav>
+            <div class="nav-container">
+                <div class="logo-container">
+                    <div class="logo-icon">و</div>
+                 
+                <span class="logo-text">وجهتك</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#" onclick="showPage('page-main-tracks'); return false;">الرئيسية</a>
+                    <a href="#" onclick="alert('وجهتك: منصة عربية شاملة للإرشاد والتطوير المهني والتوظيف.'); return false;">من نحن</a>
+                    <a href="#" onclick="alert('تواصل معنا عبر البريد: support@wajhatak.com'); return false;">تواصل معنا</a>
+                </div>
+                <button class="logout-btn" onclick="executeLogout()">تسجيل الخروج</button>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <h2 class="section-title">اختر مسارك</h2>
+            
+            <div class="card" style="cursor: pointer;" onclick="showPage('page-track-students')">
+                <h3>🎓 الطلاب والخريجون الجدد</h3>
+                <p>اكتشف ميولك، أنشئ سيرتك الذاتية، وتأهل لسوق العمل</p>
+                <button class="action-btn" style="margin-top: 0.5rem;">دخول المسار</button>
+            </div>
+
+            <div class="card" style="cursor: pointer;" onclick="showPage('page-track-jobseekers')">
+                <h3>💼 الباحثون عن عمل</h3>
+                <p>طور سيرتك، اكتسب مهارات، واجتز المقابلات بثقة</p>
+                <button class="action-btn" style="margin-top: 0.5rem;">دخول المسار</button>
+            </div>
+
+            <div class="card" style="cursor: pointer;" onclick="showPage('page-track-employees')">
+                <h3>🌟 الموظفون وطالبو التطوير</h3>
+                <p>طور مهاراتك واستكشف فرصاً وظيفية أفضل</p>
+                <button class="action-btn" style="margin-top: 0.5rem;">دخول المسار</button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>وجهتك — اختر مسارك واصنع مستقبلك © 2026</p>
+        </footer>
+    </div>
+
+    <!-- 3. مسار الطلاب والخريجون الجدد -->
+    <div id="page-track-students" class="page">
+        <nav>
+            <div class="nav-container">
+                <div class="logo-container">
+                    <div class="logo-icon">و</div>
+                    <span class="logo-text">وجهتك</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#" onclick="showPage('page-main-tracks'); return false;">الرئيسية</a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <a href="#" class="back-btn" onclick="showPage('page-main-tracks'); return false;">← العودة لاختيار المسار</a>
+            <h2 class="section-title">🎓 الطلاب والخريجون الجدد</h2>
+            
+            <div class="card">
+                <h3>🧭 اكتشف ميولك وتخصصك</h3>
+                <p>أختبر نفسك وتعرف على التخصصات الأنسب لك من خلال اختبارنا التوجيهي.</p>
+                <button class="action-btn" onclick="alert('جاري فتح اختبار الميول المهنية!')">ابدأ الاختبار</button>
+            </div>
+
+            <div class="card">
+                <h3>📄 أنشئ سيرتك الذاتية الأولى</h3>
+                <p>نماذج وأدلة شاملة لبناء سيرتك الذاتية وتطويرها من البداية.</p>
+                <button class="action-btn" onclick="alert('فتح أدوات بناء السيرة الذاتية الأولى!')">ابدأ التطوير</button>
+            </div>
+
+            <div class="card">
+                <h3>📚 تدريب وتأهيل لسوق العمل</h3>
+                <p>دورات تدريبية مجانية ومعتمدة تؤهلك وتجهزك للعمل في قطاعات واعدة.</p>
+                <button class="action-btn" onclick="alert('توجيه لبرامج التدريب والتأهيل لسوق العمل!')">ابدأ التعلم</button>
+            </div>
+
+            <div class="card">
+                <h3>🎯 فرص تدريب وتوظيف</h3>
+                <p>أحدث فرص التدريب التعاوني والوظائف المخصصة للمبتدئين حديثي التخرج.</p>
+                <button class="action-btn" onclick="alert('تصفح الفرص والوظائف الابتدائية المتاحة!')">تصفح الفرص</button>
+            </div>
+        </div>
+        <footer>
+            <p>وجهتك — اختر مسارك واصنع مستقبلك © 2026</p>
+        </footer>
+    </div>
+
+    <!-- 4. مسار الباحثون عن عمل -->
+    <div id="page-track-jobseekers" class="page">
+        <nav>
+            <div class="nav-container">
+                <div class="logo-container">
+                    <div class="logo-icon">و</div>
+                    <span class="logo-text">وجهتك</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#" onclick="showPage('page-main-tracks'); return false;">الرئيسية</a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <a href="#" class="back-btn" onclick="showPage('page-main-tracks'); return false;">← العودة لاختيار المسار</a>
+            <h2 class="section-title">💼 الباحثون عن عمل</h2>
+            
+            <div class="card">
+                <h3>✏️ طور وحدث سيرتك الذاتية</h3>
+                <p>أدلة ونماذج حديثة لتحديث سيرتك الذاتية وجذب انتباه أصحاب العمل واجتياز الفرز.</p>
+                <button class="action-btn" onclick="alert('فتح قسم تحديث قوالب السيرة الذاتية الاحترافية!')">ابدأ التطوير</button>
+            </div>
+
+            <div class="card">
+                <h3>🛠️ مهارات تزيد فرص قبولك</h3>
+                <p>دورات في المهارات الأكثر طلباً في سوق العمل لتزيد من فرص قبولك الوظيفي.</p>
+                <button class="action-btn" onclick="alert('عرض دورات المهارات المهنية الأكثر طلباً!')">تعلم المهارات</button>
+            </div>
+
+            <div class="card">
+                <h3>🤝 اجتياز المقابلة الشخصية</h3>
+                <p>دليل شامل لأنواع المقابلات والأسئلة الشائعة وتكنيكات الإجابة بثقة تامة.</p>
+                <button class="action-btn" onclick="alert('فتح دليل الاستعداد المطور للمقابلات الوظيفية!')">استعد للمقابلة</button>
+            </div>
+
+            <div class="card">
+                <h3>🔍 وظائف متاحة</h3>
+                <p>أحدث الوظائف والفرص المهنية من كبرى الشركات والمؤسسات الموثوقة.</p>
+                <button class="action-btn" onclick="alert('البحث في لوحة الوظائف والفرص النشطة!')">ابحث عن وظيفة</button>
+            </div>
+        </div>
+        <footer>
+            <p>وجهتك — اختر مسارك واصنع مستقبلك © 2026</p>
+        </footer>
+    </div>
+
+    <!-- 5. مسار الموظفون وطالبو التطوير -->
+    <div id="page-track-employees" class="page">
+        <nav>
+            <div class="nav-container">
+                <div class="logo-container">
+                    <div class="logo-icon">و</div>
+                    <span class="logo-text">وجهتك</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#" onclick="showPage('page-main-tracks'); return false;">الرئيسية</a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <a href="#" class="back-btn" onclick="showPage('page-main-tracks'); return false;">← العودة لاختيار المسار</a>
+            <h2 class="section-title">🌟 الموظفون وطالبو التطوير</h2>
+            
+            <div class="card">
+                <h3>💡 استشارات مهنية</h3>
+                <p>منصات وجلسات استشارية موثوقة تساعدك في تحقيق الاستقرار والتقدم المهني.</p>
+                <button class="action-btn" onclick="alert('حجز موعد استشارة مهنية تخصصية مع المرشدين!')">اطلب استشارة</button>
+            </div>
+
+            <div class="card">
+                <h3>📈 تطوير المهارات الوظيفية والقيادية</h3>
+                <p>دورات متخصصة ومتقدمة في الإدارة وبناء السمات القيادية للارتقاء الوظيفي.</p>
+                <button class="action-btn" onclick="alert('بدء برامج التدريب القيادي والإداري التنفيذي!')">ابدأ التعلم</button>
+            </div>
+
+            <div class="card">
+                <h3>🏆 التأهيل للترقيات والمناصب العليا</h3>
+                <p>كل ما تحتاجه من جدارات وخبرات لتكون مرشحاً مثالياً لنيل المناصب العليا.</p>
+                <button class="action-btn" onclick="alert('استكشاف أدوات التأهيل والتحضير للترقيات الداخلية!')">اكتشف المسار</button>
+            </div>
+
+            <div class="card">
+                <h3>🔄 تغيير مسارك المهني</h3>
+                <p>حلول وخطوات مدروسة لتجهيزك لعمل تحول وظيفي (Career Shift) ناجح وبثقة تامة.</p>
+                <button class="action-btn" onclick="alert('فتح استراتيجيات التخطيط لتغيير المجال المهني بنجاح!')">خطوات التغيير</button>
+            </div>
+        </div>
+        <footer>
+            <p>وجهتك — اختر مسارك واصنع مستقبلك © 2026</p>
+        </footer>
+    </div>
+
+    <!-- أكواد الـ JavaScript التشغيلية -->
+    <script>
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(p => p.classList.remove('active'));
+            
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginOverlay').classList.add('active');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginOverlay').classList.remove('active');
+        }
+
+        function executeLogin() {
+            const user = document.getElementById('usernameInput').value;
+            const pass = document.getElementById('passwordInput').value;
+            
+            if (user.trim() !== "" && pass.trim() !== "") {
+                closeLoginModal();
+                showPage('page-main-tracks');
+            } else {
+                alert('الرجاء كتابة اسم المستخدم وكلمة المرور لتجربة المنصة والمعاينة التفاعلية بشكل كامل!');
+            }
+        }
+
+        function executeLogout() {
+            showPage('page-landing');
+            document.getElementById('usernameInput').value = "";
+            document.getElementById('passwordInput').value = "";
+        }
+    </script>
+</body>
+</html>
